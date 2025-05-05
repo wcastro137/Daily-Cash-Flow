@@ -10,140 +10,113 @@
       margin: auto;
       padding: 20px;
     }
-
-    label {
-      display: block;
-      margin-top: 10px;
-    }
-
     .expense-row {
       margin-bottom: 10px;
       border-bottom: 1px solid #ccc;
       padding-bottom: 10px;
     }
-
     button {
       margin-top: 15px;
       padding: 10px 15px;
     }
-
-    .success {
-      color: green;
-      font-weight: bold;
-      margin-top: 20px;
-    }
-
-    .error {
-      color: red;
-      font-weight: bold;
-      margin-top: 20px;
-    }
+    .success { color: green; font-weight: bold; margin-top: 20px; }
+    .error { color: red; font-weight: bold; margin-top: 20px; }
   </style>
 </head>
 <body>
   <h2>Daily Cash Flow Submission</h2>
   <form id="cashFlowForm">
-    <label>Date:
-      <input type="date" name="date" required>
-    </label>
-    <label>Tuition O.R.:
-      <input type="text" name="tuition_or">
-    </label>
-    <label>Tuition Amount:
-      <input type="number" name="tuition_amt">
-    </label>
-    <label>Entrance O.R.:
-      <input type="text" name="entrance_or">
-    </label>
-    <label>Entrance Amount:
-      <input type="number" name="entrance_amt">
-    </label>
-    <label>Reservation O.R.:
-      <input type="text" name="reservation_or">
-    </label>
-    <label>Reservation Amount:
-      <input type="number" name="reservation_amt">
-    </label>
-    <label>Certificate O.R.:
-      <input type="text" name="certificate_or">
-    </label>
-    <label>Certificate Amount:
-      <input type="number" name="certificate_amt">
-    </label>
+    <label>Date: <input type="date" name="date" required></label><br>
+    <label>Tuition O.R.: <input type="text" name="tuition_or"></label><br>
+    <label>Tuition Amount: <input type="number" name="tuition_amt"></label><br>
+    <label>Entrance O.R.: <input type="text" name="entrance_or"></label><br>
+    <label>Entrance Amount: <input type="number" name="entrance_amt"></label><br>
+    <label>Reservation O.R.: <input type="text" name="reservation_or"></label><br>
+    <label>Reservation Amount: <input type="number" name="reservation_amt"></label><br>
+    <label>Certificate O.R.: <input type="text" name="certificate_or"></label><br>
+    <label>Certificate Amount: <input type="number" name="certificate_amt"></label><br>
 
     <h3>Expenses</h3>
     <div id="expenseRows">
       <div class="expense-row">
-        <label>Description:
-          <input type="text" name="expense_description[]">
-        </label>
-        <label>Category:
-          <input type="text" name="expense_category[]">
-        </label>
-        <label>Amount:
-          <input type="number" name="expense_amount[]">
-        </label>
+        <label>Description: <input type="text" name="expense_description"></label>
+        <label>Category: <input type="text" name="expense_category"></label>
+        <label>Amount: <input type="number" name="expense_amount"></label>
       </div>
     </div>
-    <button type="button" onclick="addExpenseRow()">+ Add Another Expense</button>
+    <button type="button" onclick="addExpenseRow()">+ Add Another Expense</button><br><br>
 
-    <label>Petty Cash:
-      <input type="number" name="petty_cash">
-    </label>
-
+    <label>Petty Cash: <input type="number" name="petty_cash"></label><br>
     <button type="submit">Submit</button>
     <div id="responseMsg"></div>
   </form>
 
   <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwyfwCBpQtevR5pmDslL629cf5vPCgaO8_OQtnB_wmQW99Oleah70aoTr3cR_uD8_oG/exec';
-
-    document.getElementById('cashFlowForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
-      const form = e.target;
-      const formData = new FormData(form);
-
-      const data = new URLSearchParams();
-      formData.forEach((value, key) => {
-        data.append(key, value);
-      });
-
-      try {
-        const response = await fetch(scriptURL, {
-          method: 'POST',
-          body: data
-        });
-
-        const result = await response.json();
-        if (result.success) {
-          document.getElementById("responseMsg").innerHTML = "<div class='success'>✅ Submission successful!</div>";
-          form.reset();
-        } else {
-          document.getElementById("responseMsg").innerHTML = "<div class='error'>❌ Submission failed.</div>";
-        }
-      } catch (error) {
-        document.getElementById("responseMsg").innerHTML = "<div class='error'>❌ Error: Submission failed.</div>";
-        console.error(error);
-      }
-    });
+    const scriptURL = 'https://script.google.com/macros/s/PASTE_YOUR_DEPLOYED_URL_HERE/exec';
 
     function addExpenseRow() {
       const container = document.getElementById("expenseRows");
       const newRow = document.createElement("div");
       newRow.className = "expense-row";
       newRow.innerHTML = `
-        <label>Description:
-          <input type="text" name="expense_description[]">
-        </label>
-        <label>Category:
-          <input type="text" name="expense_category[]">
-        </label>
-        <label>Amount:
-          <input type="number" name="expense_amount[]">
-        </label>
+        <label>Description: <input type="text" name="expense_description"></label>
+        <label>Category: <input type="text" name="expense_category"></label>
+        <label>Amount: <input type="number" name="expense_amount"></label>
       `;
       container.appendChild(newRow);
     }
+
+    document.getElementById('cashFlowForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const form = e.target;
+
+      const data = {
+        date: form.date.value,
+        tuition_or: form.tuition_or.value,
+        tuition_amt: form.tuition_amt.value,
+        entrance_or: form.entrance_or.value,
+        entrance_amt: form.entrance_amt.value,
+        reservation_or: form.reservation_or.value,
+        reservation_amt: form.reservation_amt.value,
+        certificate_or: form.certificate_or.value,
+        certificate_amt: form.certificate_amt.value,
+        petty_cash: form.petty_cash.value,
+        expense_description: [],
+        expense_category: [],
+        expense_amount: []
+      };
+
+      const descriptions = document.querySelectorAll('input[name="expense_description"]');
+      const categories = document.querySelectorAll('input[name="expense_category"]');
+      const amounts = document.querySelectorAll('input[name="expense_amount"]');
+
+      descriptions.forEach(input => data.expense_description.push(input.value));
+      categories.forEach(input => data.expense_category.push(input.value));
+      amounts.forEach(input => data.expense_amount.push(input.value));
+
+      try {
+        const response = await fetch(scriptURL, {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          document.getElementById("responseMsg").innerHTML = "<div class='success'>✅ Submission successful!</div>";
+          form.reset();
+          document.getElementById("expenseRows").innerHTML = ''; // Clear all rows
+          addExpenseRow(); // Add one default
+        } else {
+          document.getElementById("responseMsg").innerHTML = "<div class='error'>❌ Submission failed: " + result.error + "</div>";
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById("responseMsg").innerHTML = "<div class='error'>❌ Error: Could not submit.</div>";
+      }
+    });
   </script>
 </body>
 </html>
