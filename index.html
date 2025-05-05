@@ -31,6 +31,26 @@
     }
   </style>
 </head>
+  <script>
+  function addExpenseRow() {
+    const container = document.getElementById("expenseRows");
+    const newRow = document.createElement("div");
+    newRow.classList.add("expense-row");
+    newRow.innerHTML = `
+      <label>Description:
+        <input type="text" name="expense_description[]">
+      </label>
+      <label>Category:
+        <input type="text" name="expense_category[]">
+      </label>
+      <label>Amount:
+        <input type="number" name="expense_amount[]">
+      </label>
+    `;
+    container.appendChild(newRow);
+  }
+</script>
+
 <body>
 
   <h2>Daily Cash Flow Form</h2>
