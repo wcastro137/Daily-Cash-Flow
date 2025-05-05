@@ -7,126 +7,115 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f7f7f7;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1rem;
     }
-
-    h2 {
-      color: #333;
-    }
-
     label {
       display: block;
-      margin-top: 10px;
+      margin-top: 1rem;
     }
-
-    input, select {
+    input[type="text"], input[type="number"], input[type="date"] {
       width: 100%;
-      padding: 8px;
-      margin-top: 5px;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
     }
-
-    .expense-entry {
+    .expense-group {
+      margin-top: 1rem;
+      padding: 1rem;
       border: 1px solid #ccc;
-      padding: 10px;
-      margin-top: 10px;
-      background: #fff;
     }
-
     button {
-      margin-top: 15px;
-      padding: 10px 15px;
-      font-size: 16px;
-    }
-
-    #message {
-      margin-top: 20px;
-      font-weight: bold;
+      margin-top: 2rem;
+      padding: 0.75rem 1.5rem;
     }
   </style>
 </head>
 <body>
-  <h2>Daily Cash Flow Submission</h2>
+  <h2>Daily Cash Flow Form</h2>
+  <form id="cashFlowForm">
+    <label>Date:
+      <input type="date" name="date" required />
+    </label>
 
-  <form id="cashflow-form">
-    <label for="date">Date</label>
-    <input type="date" name="date" required />
+    <label>Tuition OR:
+      <input type="text" name="tuition_or" />
+    </label>
+    <label>Tuition Amount:
+      <input type="number" name="tuition_amt" />
+    </label>
 
-    <label>Tuition OR Number</label>
-    <input type="text" name="tuition_or" />
-    <label>Tuition Amount</label>
-    <input type="number" step="0.01" name="tuition_amt" />
+    <label>Entrance OR:
+      <input type="text" name="entrance_or" />
+    </label>
+    <label>Entrance Amount:
+      <input type="number" name="entrance_amt" />
+    </label>
 
-    <label>Entrance OR Number</label>
-    <input type="text" name="entrance_or" />
-    <label>Entrance Amount</label>
-    <input type="number" step="0.01" name="entrance_amt" />
+    <label>Reservation OR:
+      <input type="text" name="reservation_or" />
+    </label>
+    <label>Reservation Amount:
+      <input type="number" name="reservation_amt" />
+    </label>
 
-    <label>Reservation OR Number</label>
-    <input type="text" name="reservation_or" />
-    <label>Reservation Amount</label>
-    <input type="number" step="0.01" name="reservation_amt" />
+    <label>Certificate OR:
+      <input type="text" name="certificate_or" />
+    </label>
+    <label>Certificate Amount:
+      <input type="number" name="certificate_amt" />
+    </label>
 
-    <label>Certificate OR Number</label>
-    <input type="text" name="certificate_or" />
-    <label>Certificate Amount</label>
-    <input type="number" step="0.01" name="certificate_amt" />
-
-    <label>Petty Cash Total</label>
-    <input type="number" step="0.01" name="petty_cash" />
+    <label>Petty Cash:
+      <input type="text" name="petty_cash" />
+    </label>
 
     <h3>Expenses</h3>
-    <div id="expenses-container">
-      <div class="expense-entry">
-        <label>Description</label>
+    <div class="expense-group">
+      <label>Description:
         <input type="text" name="expense_description[]" />
-        <label>Category</label>
+      </label>
+      <label>Category:
         <input type="text" name="expense_category[]" />
-        <label>Amount</label>
-        <input type="number" step="0.01" name="expense_amount[]" />
-      </div>
+      </label>
+      <label>Amount:
+        <input type="number" name="expense_amount[]" />
+      </label>
     </div>
 
-    <button type="button" onclick="addExpense()">➕ Add Expense</button>
-    <button type="submit">✅ Submit</button>
+    <div class="expense-group">
+      <label>Description:
+        <input type="text" name="expense_description[]" />
+      </label>
+      <label>Category:
+        <input type="text" name="expense_category[]" />
+      </label>
+      <label>Amount:
+        <input type="number" name="expense_amount[]" />
+      </label>
+    </div>
+
+    <button type="submit">Submit</button>
   </form>
 
-  <div id="message"></div>
-
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwyfwCBpQtevR5pmDslL629cf5vPCgaO8_OQtnB_wmQW99Oleah70aoTr3cR_uD8_oG/exec";
+    const scriptURL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
 
-    function addExpense() {
-      const container = document.getElementById("expenses-container");
-      const entry = document.createElement("div");
-      entry.className = "expense-entry";
-      entry.innerHTML = `
-        <label>Description</label>
-        <input type="text" name="expense_description[]" />
-        <label>Category</label>
-        <input type="text" name="expense_category[]" />
-        <label>Amount</label>
-        <input type="number" step="0.01" name="expense_amount[]" />
-      `;
-      container.appendChild(entry);
-    }
-
-    document.getElementById("cashflow-form").addEventListener("submit", function (e) {
+    document.getElementById('cashFlowForm').addEventListener('submit', (e) => {
       e.preventDefault();
-      const form = e.target;
-      const formData = new FormData(form);
-
+      const form = new FormData(e.target);
       fetch(scriptURL, {
-        method: "POST",
-        mode: "no-cors", // bypass CORS block from GitHub Pages
-        body: formData
+        method: 'POST',
+        body: new URLSearchParams(form)
       })
-      .then(() => {
-        document.getElementById("message").textContent = "✅ Submitted successfully!";
-        form.reset();
+      .then(response => response.text())
+      .then(result => {
+        console.log('Success:', result);
+        alert('✅ Submitted successfully!');
       })
-      .catch(() => {
-        document.getElementById("message").textContent = "❌ Submission failed.";
+      .catch(error => {
+        console.error('Error!', error.message);
+        alert('❌ Submission failed.');
       });
     });
   </script>
