@@ -71,15 +71,22 @@
       <input type="number" name="petty_cash">
     </label>
 
-    <h3>Expense Row (one set)</h3>
-    <label>Expense Description:
+   <h3>Expenses</h3>
+<div id="expenseRows">
+  <div class="expense-row">
+    <label>Description:
       <input type="text" name="expense_description[]">
     </label>
-    <label>Expense Category:
+    <label>Category:
       <input type="text" name="expense_category[]">
     </label>
-    <label>Expense Amount:
+    <label>Amount:
       <input type="number" name="expense_amount[]">
+    </label>
+  </div>
+</div>
+<button type="button" onclick="addExpenseRow()">+ Add Another Expense</button>
+
     </label>
 
     <button type="submit">Submit</button>
