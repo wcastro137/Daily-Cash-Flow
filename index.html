@@ -4,94 +4,120 @@
   <meta charset="UTF-8">
   <title>Daily Cash Flow Submission</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 700px; margin: auto; }
-    input, select, button { margin-bottom: 10px; display: block; width: 100%; padding: 8px; }
-    .expense-group { margin-bottom: 10px; border: 1px solid #ccc; padding: 10px; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+      max-width: 800px;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    input {
+      width: 100%;
+      padding: 5px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 15px;
+      background: orange;
+      border: none;
+      color: white;
+      font-weight: bold;
+    }
+    #responseMessage {
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
 
-  <h2>Submit Daily Cash Flow</h2>
+  <h2>Daily Cash Flow Form</h2>
+  <form id="cashFlowForm">
+    <label>Date:
+      <input type="date" name="date" required>
+    </label>
 
-  <form id="cashflowForm">
-    <label>Date: <input type="date" name="date" required></label>
+    <label>Tuition OR:
+      <input type="text" name="tuition_or">
+    </label>
+    <label>Tuition Amount:
+      <input type="number" name="tuition_amt">
+    </label>
 
-    <label>Tuition OR: <input type="text" name="tuition_or"></label>
-    <label>Tuition Amount: <input type="number" name="tuition_amt" step="0.01"></label>
+    <label>Entrance OR:
+      <input type="text" name="entrance_or">
+    </label>
+    <label>Entrance Amount:
+      <input type="number" name="entrance_amt">
+    </label>
 
-    <label>Entrance OR: <input type="text" name="entrance_or"></label>
-    <label>Entrance Amount: <input type="number" name="entrance_amt" step="0.01"></label>
+    <label>Reservation OR:
+      <input type="text" name="reservation_or">
+    </label>
+    <label>Reservation Amount:
+      <input type="number" name="reservation_amt">
+    </label>
 
-    <label>Reservation OR: <input type="text" name="reservation_or"></label>
-    <label>Reservation Amount: <input type="number" name="reservation_amt" step="0.01"></label>
+    <label>Certificate OR:
+      <input type="text" name="certificate_or">
+    </label>
+    <label>Certificate Amount:
+      <input type="number" name="certificate_amt">
+    </label>
 
-    <label>Certificate OR: <input type="text" name="certificate_or"></label>
-    <label>Certificate Amount: <input type="number" name="certificate_amt" step="0.01"></label>
+    <label>Petty Cash:
+      <input type="number" name="petty_cash">
+    </label>
 
-    <div id="expensesContainer">
-      <h3>Expenses</h3>
-      <div class="expense-group">
-        <label>Description: <input type="text" name="expense_description[]"></label>
-        <label>Category:
-          <select name="expense_category[]">
-            <option>Supplies</option>
-            <option>Utilities</option>
-            <option>Maintenance</option>
-            <option>Others</option>
-          </select>
-        </label>
-        <label>Amount: <input type="number" name="expense_amount[]" step="0.01"></label>
-      </div>
-    </div>
-
-    <button type="button" onclick="addExpense()">+ Add Another Expense</button>
-
-    <label>Petty Cash Used: <input type="number" name="petty_cash" step="0.01"></label>
+    <h3>Expense Row (one set)</h3>
+    <label>Expense Description:
+      <input type="text" name="expense_description[]">
+    </label>
+    <label>Expense Category:
+      <input type="text" name="expense_category[]">
+    </label>
+    <label>Expense Amount:
+      <input type="number" name="expense_amount[]">
+    </label>
 
     <button type="submit">Submit</button>
-    <p id="result"></p>
   </form>
 
+  <p id="responseMessage"></p>
+
   <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwyfwCBpQtevR5pmDslL629cf5vPCgaO8_OQtnB_wmQW99Oleah70aoTr3cR_uD8_oG/exec'; // replace with your Web App URL
+    const form = document.getElementById("cashFlowForm");
+    const message = document.getElementById("responseMessage");
 
-    document.getElementById('cashflowForm').addEventListener('submit', function (e) {
+    form.addEventListener("submit", async function (e) {
       e.preventDefault();
-      const formData = new FormData(this);
+      const formData = new FormData(form);
+      const params = new URLSearchParams();
 
-      fetch(scriptURL, {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(result => {
-        document.getElementById('result').textContent = '✅ Submitted successfully!';
-        console.log('Success:', result);
-      })
-      .catch(error => {
-        document.getElementById('result').textContent = '❌ Submission failed.';
-        console.error('Error:', error);
-      });
+      for (const [key, value] of formData.entries()) {
+        params.append(key, value);
+      }
+
+      try {
+        const res = await fetch("YOUR_SCRIPT_WEBAPP_URL", {
+          method: "POST",
+          body: params
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          message.textContent = "✅ Submission successful!";
+          form.reset();
+        } else {
+          message.textContent = "⚠️ Submission failed. Try again.";
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        message.textContent = "❌ Network error or script URL is invalid.";
+      }
     });
-
-    function addExpense() {
-      const container = document.getElementById('expensesContainer');
-      const group = document.createElement('div');
-      group.className = 'expense-group';
-      group.innerHTML = `
-        <label>Description: <input type="text" name="expense_description[]"></label>
-        <label>Category:
-          <select name="expense_category[]">
-            <option>Supplies</option>
-            <option>Utilities</option>
-            <option>Maintenance</option>
-            <option>Others</option>
-          </select>
-        </label>
-        <label>Amount: <input type="number" name="expense_amount[]" step="0.01"></label>
-      `;
-      container.appendChild(group);
-    }
   </script>
 
 </body>
