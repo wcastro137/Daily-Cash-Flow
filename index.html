@@ -1,122 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Daily Cash Flow Submission</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daily Cash Flow Form</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: auto;
       padding: 20px;
+      background: #f7f7f7;
     }
-    .expense-row {
-      margin-bottom: 10px;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 10px;
+
+    h2 {
+      color: #333;
     }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+
+    .expense-entry {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 10px;
+      background: #fff;
+    }
+
     button {
       margin-top: 15px;
       padding: 10px 15px;
+      font-size: 16px;
     }
-    .success { color: green; font-weight: bold; margin-top: 20px; }
-    .error { color: red; font-weight: bold; margin-top: 20px; }
+
+    #message {
+      margin-top: 20px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
   <h2>Daily Cash Flow Submission</h2>
-  <form id="cashFlowForm">
-    <label>Date: <input type="date" name="date" required></label><br>
-    <label>Tuition O.R.: <input type="text" name="tuition_or"></label><br>
-    <label>Tuition Amount: <input type="number" name="tuition_amt"></label><br>
-    <label>Entrance O.R.: <input type="text" name="entrance_or"></label><br>
-    <label>Entrance Amount: <input type="number" name="entrance_amt"></label><br>
-    <label>Reservation O.R.: <input type="text" name="reservation_or"></label><br>
-    <label>Reservation Amount: <input type="number" name="reservation_amt"></label><br>
-    <label>Certificate O.R.: <input type="text" name="certificate_or"></label><br>
-    <label>Certificate Amount: <input type="number" name="certificate_amt"></label><br>
+
+  <form id="cashflow-form">
+    <label for="date">Date</label>
+    <input type="date" name="date" required />
+
+    <label>Tuition OR Number</label>
+    <input type="text" name="tuition_or" />
+    <label>Tuition Amount</label>
+    <input type="number" step="0.01" name="tuition_amt" />
+
+    <label>Entrance OR Number</label>
+    <input type="text" name="entrance_or" />
+    <label>Entrance Amount</label>
+    <input type="number" step="0.01" name="entrance_amt" />
+
+    <label>Reservation OR Number</label>
+    <input type="text" name="reservation_or" />
+    <label>Reservation Amount</label>
+    <input type="number" step="0.01" name="reservation_amt" />
+
+    <label>Certificate OR Number</label>
+    <input type="text" name="certificate_or" />
+    <label>Certificate Amount</label>
+    <input type="number" step="0.01" name="certificate_amt" />
+
+    <label>Petty Cash Total</label>
+    <input type="number" step="0.01" name="petty_cash" />
 
     <h3>Expenses</h3>
-    <div id="expenseRows">
-      <div class="expense-row">
-        <label>Description: <input type="text" name="expense_description"></label>
-        <label>Category: <input type="text" name="expense_category"></label>
-        <label>Amount: <input type="number" name="expense_amount"></label>
+    <div id="expenses-container">
+      <div class="expense-entry">
+        <label>Description</label>
+        <input type="text" name="expense_description[]" />
+        <label>Category</label>
+        <input type="text" name="expense_category[]" />
+        <label>Amount</label>
+        <input type="number" step="0.01" name="expense_amount[]" />
       </div>
     </div>
-    <button type="button" onclick="addExpenseRow()">+ Add Another Expense</button><br><br>
 
-    <label>Petty Cash: <input type="number" name="petty_cash"></label><br>
-    <button type="submit">Submit</button>
-    <div id="responseMsg"></div>
+    <button type="button" onclick="addExpense()">➕ Add Expense</button>
+    <button type="submit">✅ Submit</button>
   </form>
 
-  <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwyfwCBpQtevR5pmDslL629cf5vPCgaO8_OQtnB_wmQW99Oleah70aoTr3cR_uD8_oG/exec';
+  <div id="message"></div>
 
-    function addExpenseRow() {
-      const container = document.getElementById("expenseRows");
-      const newRow = document.createElement("div");
-      newRow.className = "expense-row";
-      newRow.innerHTML = `
-        <label>Description: <input type="text" name="expense_description"></label>
-        <label>Category: <input type="text" name="expense_category"></label>
-        <label>Amount: <input type="number" name="expense_amount"></label>
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/YOUR_SCRIPT_URL_HERE/exec";
+
+    function addExpense() {
+      const container = document.getElementById("expenses-container");
+      const entry = document.createElement("div");
+      entry.className = "expense-entry";
+      entry.innerHTML = `
+        <label>Description</label>
+        <input type="text" name="expense_description[]" />
+        <label>Category</label>
+        <input type="text" name="expense_category[]" />
+        <label>Amount</label>
+        <input type="number" step="0.01" name="expense_amount[]" />
       `;
-      container.appendChild(newRow);
+      container.appendChild(entry);
     }
 
-    document.getElementById('cashFlowForm').addEventListener('submit', async function (e) {
+    document.getElementById("cashflow-form").addEventListener("submit", function (e) {
       e.preventDefault();
       const form = e.target;
+      const formData = new FormData(form);
 
-      const data = {
-        date: form.date.value,
-        tuition_or: form.tuition_or.value,
-        tuition_amt: form.tuition_amt.value,
-        entrance_or: form.entrance_or.value,
-        entrance_amt: form.entrance_amt.value,
-        reservation_or: form.reservation_or.value,
-        reservation_amt: form.reservation_amt.value,
-        certificate_or: form.certificate_or.value,
-        certificate_amt: form.certificate_amt.value,
-        petty_cash: form.petty_cash.value,
-        expense_description: [],
-        expense_category: [],
-        expense_amount: []
-      };
-
-      const descriptions = document.querySelectorAll('input[name="expense_description"]');
-      const categories = document.querySelectorAll('input[name="expense_category"]');
-      const amounts = document.querySelectorAll('input[name="expense_amount"]');
-
-      descriptions.forEach(input => data.expense_description.push(input.value));
-      categories.forEach(input => data.expense_category.push(input.value));
-      amounts.forEach(input => data.expense_amount.push(input.value));
-
-      console.log("Sending data:", data);
-      try {
-        const response = await fetch(scriptURL, {
-          method: 'POST',
-          body: JSON.stringify(data),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-
-        const result = await response.json();
-        if (result.success) {
-          document.getElementById("responseMsg").innerHTML = "<div class='success'>✅ Submission successful!</div>";
-          form.reset();
-          document.getElementById("expenseRows").innerHTML = ''; // Clear all rows
-          addExpenseRow(); // Add one default
-        } else {
-          document.getElementById("responseMsg").innerHTML = "<div class='error'>❌ Submission failed: " + result.error + "</div>";
-        }
-      } catch (err) {
-        console.error(err);
-        document.getElementById("responseMsg").innerHTML = "<div class='error'>❌ Error: Could not submit.</div>";
-      }
+      fetch(scriptURL, {
+        method: "POST",
+        mode: "no-cors", // bypass CORS block from GitHub Pages
+        body: formData
+      })
+      .then(() => {
+        document.getElementById("message").textContent = "✅ Submitted successfully!";
+        form.reset();
+      })
+      .catch(() => {
+        document.getElementById("message").textContent = "❌ Submission failed.";
+      });
     });
   </script>
 </body>
